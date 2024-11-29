@@ -1,20 +1,22 @@
-.pulseHeart {
-  font-size: 30px; /* Dimensiunea inimii */
-  color: red; /* Culoarea roșie */
+.heart {
   display: inline-block;
-  animation: pulse 2s infinite ease-in-out; /* Animația de pulsare */
+  animation: pulse 1.5s infinite;
 }
 
-/* Definirea animației de pulsare */
+.container {
+  margin: -25px 280px 0;
+}
+
 @keyframes pulse {
   0% {
-    transform: scale(0.7); /* Dimensiunea inițială */
+    transform: scale(1);
   }
   50% {
-    transform: scale(1); /* Mărește inima */
+    transform: scale(1.2);
   }
   100% {
-    transform: scale(0.7); /* Reveniți la dimensiunea inițială */
+    transform: scale(1);
   }
 }
+
 

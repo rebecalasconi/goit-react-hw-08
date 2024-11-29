@@ -1,84 +1,90 @@
-import React, { useEffect } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../../redux/auth/authSlice';
-import { Container, Box, Button, Typography } from '@mui/material';
-import Login from '../Auth/Login';
-import Register from '../Auth/Register';
-import Contacts from '../../pages/ContactsPage';
+import React, { useState, createContext } from 'react';
+import { Box, Button, Typography, Container } from '@mui/material';
+import { Routes, Route, Link, Navigate } from 'react-router-dom';
+import Register from '../Auth/Register'; 
 import PrivateRoute from 'components/PrivateRoute';
+import Login from '../Auth/Login'; 
+import Home from '../../pages/Home'; // Importă componenta Home
+import Contacts from '../../pages/ContactsPage'; 
 
-const App = () => {
-  const dispatch = useDispatch();
+// Crearea unui context pentru autentificare
+const AuthContext = createContext();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    if (token && user) {
-      dispatch(loginSuccess({ user: JSON.parse(user), token }));
-    }
-  }, [dispatch]); // se rulează doar la montare și actualizare a stării
-  
+function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const token = localStorage.getItem('token');
-      const user = localStorage.getItem('user');
-      console.log('token is:', token);
-      console.log('user is:', user);
-      if (token && user) {
-        dispatch(loginSuccess({ user: JSON.parse(user), token }));
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, [dispatch]);
+  const login = () => setIsAuthenticated(true);
+  const logout = () => setIsAuthenticated(false);
 
   return (
-    <Container>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
       <Box
         sx={{
-          textAlign: 'center',
-          margin: '2rem',
           background: 'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(166,205,252,1) 100%)',
-          padding: '2rem',
+          minHeight: '100vh',
+          paddingBottom: '4rem', // Adaugă spațiu pentru inima pulsantă
         }}
       >
-        <Typography variant="h3" color="primary">
-          Phonebook App
-        </Typography>
 
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ marginTop: '1rem', marginRight: '1rem' }}
-          component={Link}
-          to="/login"
+        {/* Definirea rutelor */}
+        <Routes>
+          {/* Ruta principală - Home */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/contacts" element={<PrivateRoute element={<Contacts />} />} />
+          <Route path="*" element={<Typography>404 - Page Not Found</Typography>} />
+        </Routes>
+        <Container sx={{ padding: '2rem', textAlign: 'center', marginTop: '-80px' }}>
+          <Box sx={{ marginBottom: '2rem' }}>
+            {/* Linkuri pentru Register și Login */}
+            {!isAuthenticated ? (
+              <>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ margin: '0.5rem' }}
+                  component={Link}
+                  to="/register"
+                >
+                  Register
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  sx={{ margin: '0.5rem' }}
+                  component={Link}
+                  to="/login"
+                >
+                  Login
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="contained"
+                color="warning"
+                sx={{ margin: '0.5rem' }}
+                onClick={logout}
+              >
+                Logout
+              </Button>
+            )}
+          </Box>
+        </Container>
+        {/* Inima pulsantă */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '57rem',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            fontSize: '1.5rem',
+          }}
         >
-          Login
-        </Button>
-        <Button
-          variant="outlined"
-          sx={{ marginTop: '1rem' }}
-          component={Link}
-          to="/register"
-        >
-          Register
-        </Button>
+        </Box>
       </Box>
-
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/contacts" element={<PrivateRoute element={<Contacts />} />} />
-        <Route path="*" element={<Typography>404 - Page Not Found</Typography>} />
-      </Routes>
-    </Container>
+    </AuthContext.Provider>
   );
-};
+}
 
 export default App;

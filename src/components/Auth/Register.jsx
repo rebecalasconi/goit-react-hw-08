@@ -44,6 +44,17 @@ function Register() {
     }
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === 'name') setName(value);
+    if (name === 'email') setEmail(value);
+    if (name === 'password') setPassword(value);
+
+    // Clear the error if any input is changed
+    setError('');
+  };
+
   return (
     <Box
       sx={{
@@ -82,8 +93,9 @@ function Register() {
             variant="outlined"
             fullWidth
             required
+            name="name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={handleChange}
             sx={{ marginBottom: '1rem', backgroundColor: '#fff' }}
           />
           <TextField
@@ -91,8 +103,9 @@ function Register() {
             variant="outlined"
             fullWidth
             required
+            name="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleChange}
             sx={{ marginBottom: '1rem', backgroundColor: '#fff' }}
           />
           <TextField
@@ -101,8 +114,9 @@ function Register() {
             variant="outlined"
             fullWidth
             required
+            name="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handleChange}
             sx={{ marginBottom: '1rem', backgroundColor: '#fff' }}
           />
 
@@ -126,6 +140,7 @@ function Register() {
               },
               color: '#fff',
             }}
+            disabled={!!error} // Disable button if there is any error
           >
             Register
           </Button>
