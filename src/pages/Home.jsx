@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import styles from './Home.module.css'; // Importă fișierul CSS pentru stiluri personalizate
+import styles from './Home.module.css';
 
 const Home = () => {
   return (
@@ -16,7 +16,6 @@ const Home = () => {
         padding: '2rem',
       }}
     >
-      {/* Titlu special cu animație */}
       <Typography
         variant="h3"
         sx={{
@@ -25,12 +24,12 @@ const Home = () => {
           color: '#333',
           marginBottom: '1rem',
         }}
-        className={styles.pulsingText} // Aplică clasa CSS pentru animație
+        className={styles.pulsingText} 
       >
         Welcome to Phonebook App
       </Typography>
       <Typography>
-      A place to store your contacts <span className={styles.heart}>❤️</span>
+      A place to store your contacts <span className={'styles.heart'}>❤️</span>
           </Typography>
     </Box>
   );

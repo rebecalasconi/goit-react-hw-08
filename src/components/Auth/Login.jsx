@@ -9,13 +9,12 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // <-- useNavigate from react-router-dom
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      // Make the login API call
       const response = await fetch('https://connections-api.goit.global/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -25,16 +24,10 @@ function Login() {
       if (response.ok) {
         const data = await response.json();
         const { token, user } = data;
-
-        // Save the token and user data to localStorage
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
-
-        // Dispatch login success (if using Redux for state management)
         dispatch(loginSuccess({ user, token }));
-
-        // Redirect to dashboard or contacts page
-        navigate('/contacts'); // <-- use navigate to redirect
+        navigate('/contacts');
       } else {
         const errorData = await response.json();
         setError(errorData.message || 'Invalid credentials. Please try again.');

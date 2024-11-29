@@ -4,10 +4,10 @@ import { Routes, Route, Link, Navigate } from 'react-router-dom';
 import Register from '../Auth/Register'; 
 import PrivateRoute from 'components/PrivateRoute';
 import Login from '../Auth/Login'; 
-import Home from '../../pages/Home'; // Importă componenta Home
+import Home from '../../pages/Home';
 import Contacts from '../../pages/ContactsPage'; 
 
-// Crearea unui context pentru autentificare
+
 const AuthContext = createContext();
 
 function App() {
@@ -22,13 +22,10 @@ function App() {
         sx={{
           background: 'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(166,205,252,1) 100%)',
           minHeight: '100vh',
-          paddingBottom: '4rem', // Adaugă spațiu pentru inima pulsantă
+          paddingBottom: '4rem', 
         }}
       >
-
-        {/* Definirea rutelor */}
         <Routes>
-          {/* Ruta principală - Home */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -37,7 +34,6 @@ function App() {
         </Routes>
         <Container sx={{ padding: '2rem', textAlign: 'center', marginTop: '-80px' }}>
           <Box sx={{ marginBottom: '2rem' }}>
-            {/* Linkuri pentru Register și Login */}
             {!isAuthenticated ? (
               <>
                 <Button
@@ -71,7 +67,6 @@ function App() {
             )}
           </Box>
         </Container>
-        {/* Inima pulsantă */}
         <Box
           sx={{
             position: 'absolute',

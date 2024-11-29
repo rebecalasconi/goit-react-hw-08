@@ -19,23 +19,19 @@ function Register() {
       });
 
       const errorData = await response.json();
-      console.log(errorData); // Log error response for debugging
-
-      // Reset success message whenever we start a new registration attempt
+      console.log(errorData);
       setSuccess(false);
-      setError(''); // Reset error message before handling new errors
+      setError('');
 
       if (!response.ok) {
-        // Check if the error is a duplicate email error (MongoDB error code 11000)
         if (errorData.code === 11000 && errorData.keyPattern && errorData.keyPattern.email) {
           setError('This email is already registered. Please use a different email.');
         } else {
-          console.log('Error Message:', errorData.message); // Log any other error messages
+          console.log('Error Message:', errorData.message); 
           setError(errorData.message || 'An unexpected error occurred. Please try again.');
         }
       } else {
         setSuccess(true);
-        // Handle successful registration
         console.log('User registered successfully:', errorData);
       }
     } catch (error) {
@@ -50,8 +46,6 @@ function Register() {
     if (name === 'name') setName(value);
     if (name === 'email') setEmail(value);
     if (name === 'password') setPassword(value);
-
-    // Clear the error if any input is changed
     setError('');
   };
 
@@ -140,7 +134,7 @@ function Register() {
               },
               color: '#fff',
             }}
-            disabled={!!error} // Disable button if there is any error
+            disabled={!!error}
           >
             Register
           </Button>
