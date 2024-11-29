@@ -1,6 +1,6 @@
 import React, { useState, createContext } from 'react';
 import { Box, Button, Typography, Container } from '@mui/material';
-import { Routes, Route, Link, Navigate } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import Register from '../Auth/Register'; 
 import PrivateRoute from 'components/PrivateRoute';
 import Login from '../Auth/Login'; 
