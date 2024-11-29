@@ -4,12 +4,10 @@ import { setFilter, removeContact } from '../redux/contacts/contactsSlice';
 import {TextField, List, ListItem, IconButton, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ContactForm from '../components/ContactForm';
-import { useNavigate } from 'react-router-dom';
 import UserMenu from 'components/Navigation/UserMenu';
 
 const ContactsPage = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const contacts = useSelector((state) => state.contacts.items);
   const filter = useSelector((state) => state.contacts.filter);
   const [filteredContacts, setFilteredContacts] = useState(contacts);
@@ -53,7 +51,7 @@ const ContactsPage = () => {
 
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '600px', margin: '0 auto',
+    <div style={{maxWidth: '600px', margin: '0 auto',
       background: 'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(166,205,252,1) 100%)',
       padding: ' 4rem 22rem', }}>
 
