@@ -1,61 +1,47 @@
 import React, { useState } from 'react';
 import { Box, Container, TextField, Button, Typography } from '@mui/material';
-import { keyframes } from '@emotion/react';
-import { useNavigate } from 'react-router-dom';
-
-const zoomInOut = keyframes`
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-`;
 
 function Register() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const [isPasswordValid, setIsPasswordValid] = useState(false);
-  const [passwordsMatch, setPasswordsMatch] = useState(true);
-  const navigate = useNavigate();
+  const [success, setSuccess] = useState(false);
 
-  const validatePassword = (password) => {
-    const regex = /^(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-    return regex.test(password);
-  };
-
-  const handlePasswordChange = (e) => {
-    const value = e.target.value;
-    setPassword(value);
-    setIsPasswordValid(validatePassword(value));
-  };
-
-  const handleConfirmPasswordChange = (e) => {
-    const value = e.target.value;
-    setConfirmPassword(value);
-    setPasswordsMatch(value === password);
-  };
-
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
+    try {
+      const response = await fetch('https://connections-api.goit.global/users/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    if (!isPasswordValid) {
-      setError('Password must be at least 8 characters long and contain a special character');
-      return;
-    }
+      const errorData = await response.json();
+      console.log(errorData); // Log error response for debugging
 
-    setError('');
-    navigate('/login');
+      // Reset success message whenever we start a new registration attempt
+      setSuccess(false);
+      setError(''); // Reset error message before handling new errors
+
+      if (!response.ok) {
+        // Check if the error is a duplicate email error (MongoDB error code 11000)
+        if (errorData.code === 11000 && errorData.keyPattern && errorData.keyPattern.email) {
+          setError('This email is already registered. Please use a different email.');
+        } else {
+          console.log('Error Message:', errorData.message); // Log any other error messages
+          setError(errorData.message || 'An unexpected error occurred. Please try again.');
+        }
+      } else {
+        setSuccess(true);
+        // Handle successful registration
+        console.log('User registered successfully:', errorData);
+      }
+    } catch (error) {
+      console.log('Error during registration:', error);
+      setError('An unexpected error occurred. Please try again.');
+    }
   };
 
   return (
@@ -80,19 +66,26 @@ function Register() {
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
         }}
       >
-        <Typography
-          variant="h4"
-          sx={{
-            marginBottom: '2rem',
-            color: '#333',
-            textAlign: 'center',
-            animation: `${zoomInOut} 3s infinite ease-in-out`,
-          }}
-        >
+        <Typography variant="h4" sx={{ marginBottom: '2rem' }}>
           Register
         </Typography>
 
+        {success && (
+          <Typography color="green" sx={{ marginBottom: '1rem' }}>
+            Registration successful! Please login.
+          </Typography>
+        )}
+
         <form onSubmit={handleRegister} style={{ width: '100%' }}>
+          <TextField
+            label="Name"
+            variant="outlined"
+            fullWidth
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            sx={{ marginBottom: '1rem', backgroundColor: '#fff' }}
+          />
           <TextField
             label="Email"
             variant="outlined"
@@ -100,27 +93,7 @@ function Register() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            sx={{
-              marginBottom: '1rem',
-              backgroundColor: '#fff',
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: '#333',
-                },
-                '&:hover fieldset': {
-                  borderColor: '#555',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: '#777',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: '#333',
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: '#555',
-              },
-            }}
+            sx={{ marginBottom: '1rem', backgroundColor: '#fff' }}
           />
           <TextField
             label="Password"
@@ -129,65 +102,8 @@ function Register() {
             fullWidth
             required
             value={password}
-            onChange={handlePasswordChange}
-            sx={{
-              marginBottom: '1rem',
-              backgroundColor: '#fff',
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: '#333',
-                },
-                '&:hover fieldset': {
-                  borderColor: '#555',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: '#777',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: '#333',
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: '#555',
-              },
-            }}
-            helperText={
-              !isPasswordValid &&
-              'Password must be at least 8 characters long and contain a special character.'
-            }
-            error={!isPasswordValid}
-          />
-          <TextField
-            label="Confirm Password"
-            type="password"
-            variant="outlined"
-            fullWidth
-            required
-            value={confirmPassword}
-            onChange={handleConfirmPasswordChange}
-            sx={{
-              marginBottom: '1rem',
-              backgroundColor: '#fff',
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: '#333',
-                },
-                '&:hover fieldset': {
-                  borderColor: '#555',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: '#777',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: '#333',
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: '#555',
-              },
-            }}
-            helperText={!passwordsMatch && 'Passwords do not match.'}
-            error={!passwordsMatch}
+            onChange={(e) => setPassword(e.target.value)}
+            sx={{ marginBottom: '1rem', backgroundColor: '#fff' }}
           />
 
           {error && (

@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { login } from '../redux/auth/authSlice';
 
-const Login = () => {
+const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
 
   const handleSubmit = e => {
     e.preventDefault();
+    console.log('email is:', email);
+    console.log('password is:', password);
     dispatch(login({ email, password }));
   };
 
@@ -31,4 +33,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage;

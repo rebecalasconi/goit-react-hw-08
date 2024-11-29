@@ -1,54 +1,46 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { Box, Container, TextField, Button, Typography } from '@mui/material';
 import { loginSuccess } from '../../redux/auth/authSlice';
-import { keyframes } from '@emotion/react';
-import { ToastContainer } from 'react-toastify'; 
-import 'react-toastify/dist/ReactToastify.css'; 
+import { Box, Container, TextField, Button, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // <-- Ensure this is from react-router-dom
 
-const zoomInOut = keyframes`
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-`;
-const Login = () => {
+function Login() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate(); // <-- useNavigate from react-router-dom
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const loginData = {
-      email: e.target.email.value,
-      password: e.target.password.value,
-    };
 
     try {
+      // Make the login API call
       const response = await fetch('https://connections-api.goit.global/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(loginData),
+        body: JSON.stringify({ email, password }),
       });
 
       if (response.ok) {
         const data = await response.json();
-        // Salvează token-ul în localStorage
-        localStorage.setItem('token', data.token);
-        // Salvează utilizatorul în redux sau starea globală
-        dispatch(loginSuccess({ user: data.user, token: data.token }));
-        navigate('/contacts'); // Redirecționează la pagina de contacte
+        const { token, user } = data;
+
+        // Save the token and user data to localStorage
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+
+        // Dispatch login success (if using Redux for state management)
+        dispatch(loginSuccess({ user, token }));
+
+        // Redirect to dashboard or contacts page
+        navigate('/contacts'); // <-- use navigate to redirect
       } else {
-        setError('Login failed. Please check your credentials.');
+        const errorData = await response.json();
+        setError(errorData.message || 'Invalid credentials. Please try again.');
       }
     } catch (error) {
-      setError('Error during login: ' + error.message);
+      setError('An unexpected error occurred. Please try again.');
     }
   };
 
@@ -66,143 +58,66 @@ const Login = () => {
     >
       <Container
         sx={{
-          backgroundColor: 'white',
+          backgroundColor: 'rgba(255,255,255,0.9)',
           padding: '3rem',
           borderRadius: '8px',
-          width: '80%',
+          width: '60%',
           maxWidth: '400px',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
         }}
       >
-      
-        <Typography
-          variant="body1"
-          sx={{
-            marginBottom: '2rem',
-            color: 'black',
-            textAlign: 'center',
-            fontSize: '0.75rem', 
-            lineHeight: '1.6',
-            opacity: 0.3,
-          }}
-        >
-          Phonebook App offers seamless contact storage<br /> and retrieval to safeguard your connections. 
-          <br />
-          Check it out!
-        </Typography>
-
-       
-        <Typography
-          variant="h4"
-          sx={{
-            marginBottom: '2rem',
-            color: 'darkgray',
-            textAlign: 'center',
-            animation: `${zoomInOut} 3s infinite ease-in-out`,
-          }}
-        >
+        <Typography variant="h4" sx={{ marginBottom: '2rem' }}>
           Login
         </Typography>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleLogin} style={{ width: '100%' }}>
           <TextField
             label="Email"
-            type="email"
-            name="email"
             variant="outlined"
             fullWidth
             required
-            sx={{
-              marginBottom: '1rem',
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: '#3399cc',
-                },
-                '&:hover fieldset': {
-                  borderColor: '#006699',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: '#3399cc',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: '#3399cc',
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: '#006699',
-              },
-            }}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            sx={{ marginBottom: '1rem', backgroundColor: '#fff' }}
           />
-
           <TextField
             label="Password"
             type="password"
-            name="password"
             variant="outlined"
             fullWidth
             required
-            sx={{
-              marginBottom: '1.5rem',
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: '#3399cc',
-                },
-                '&:hover fieldset': {
-                  borderColor: '#006699',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: '#3399cc',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: '#3399cc',
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: '#006699',
-              },
-            }}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            sx={{ marginBottom: '1rem', backgroundColor: '#fff' }}
           />
+
+          {error && (
+            <Typography color="red" sx={{ marginBottom: '1rem' }}>
+              {error}
+            </Typography>
+          )}
+
           <Button
             type="submit"
             variant="contained"
             fullWidth
             sx={{
-              backgroundColor: '#3399cc',
-              '&:hover': {
-                backgroundColor: '#006699',
-              },
-              padding: '0.75rem',
-              fontSize: '1rem',
+              padding: '0.8rem',
+              fontSize: '1.1rem',
               borderRadius: '4px',
+              backgroundColor: '#0077cc',
+              '&:hover': {
+                backgroundColor: '#0055aa',
+              },
+              color: '#fff',
             }}
           >
             Login
           </Button>
         </form>
-
-        {error && (
-          <Typography
-            variant="body2"
-            sx={{
-              color: 'red',
-              marginTop: '1rem',
-              textAlign: 'center',
-              lineHeight: '1.5',
-            }}
-          >
-            {error.split('. ').map((part, index) => (
-              <React.Fragment key={index}>
-                {part}
-                {index < 3 && <br />}
-              </React.Fragment>
-            ))}
-          </Typography>
-        )}
       </Container>
-
-      <ToastContainer />
     </Box>
   );
-};
+}
 
 export default Login;
