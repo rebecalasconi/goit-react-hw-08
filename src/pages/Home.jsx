@@ -28,8 +28,12 @@ const Home = () => {
       >
         Welcome to Phonebook App
       </Typography>
-      <Typography>
-      A place to store your contacts <span className={'styles.heart'}>❤️</span>
+      <Typography       
+        sx={{
+          fontWeight: '600',
+          color: '#6600cc',
+        }}>
+      A place to store your contacts. Made with <span className={styles.heart}>❤️</span> by Rebeca Lăsconi
           </Typography>
     </Box>
   );
