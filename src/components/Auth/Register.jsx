@@ -8,8 +8,31 @@ function Register() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
+  // New regex to match at least 8 characters with one special character
+  const passwordRegex = /^(?=.*[!@#$%^&*]).{8,}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const validateInputs = () => {
+    if (!name.trim()) {
+      setError('Name is required.');
+      return false;
+    }
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address containing "@".');
+      return false;
+    }
+    if (!passwordRegex.test(password)) {
+      setError('Password must be at least 8 characters long and include at least one special character (!@#$%^&*).');
+      return false;
+    }
+    setError('');
+    return true;
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    if (!validateInputs()) return;
 
     try {
       const response = await fetch('https://connections-api.goit.global/users/signup', {
@@ -19,23 +42,21 @@ function Register() {
       });
 
       const errorData = await response.json();
-      console.log(errorData);
-      setSuccess(false);
-      setError('');
 
       if (!response.ok) {
-        if (errorData.code === 11000 && errorData.keyPattern && errorData.keyPattern.email) {
+        if (errorData.code === 11000 && errorData.keyPattern?.email) {
           setError('This email is already registered. Please use a different email.');
         } else {
-          console.log('Error Message:', errorData.message); 
           setError(errorData.message || 'An unexpected error occurred. Please try again.');
         }
-      } else {
-        setSuccess(true);
-        console.log('User registered successfully:', errorData);
+        return;
       }
-    } catch (error) {
-      console.log('Error during registration:', error);
+
+      setSuccess(true);
+      setName('');
+      setEmail('');
+      setPassword('');
+    } catch (err) {
       setError('An unexpected error occurred. Please try again.');
     }
   };
@@ -46,7 +67,9 @@ function Register() {
     if (name === 'name') setName(value);
     if (name === 'email') setEmail(value);
     if (name === 'password') setPassword(value);
-    setError('');
+
+    // Reset error only when all fields become valid
+    if (validateInputs()) setError('');
   };
 
   return (
@@ -101,6 +124,7 @@ function Register() {
             value={email}
             onChange={handleChange}
             sx={{ marginBottom: '1rem', backgroundColor: '#fff' }}
+            helperText="Email must contain '@' and be in a valid format (e.g., user@example.com)."
           />
           <TextField
             label="Password"
@@ -112,8 +136,8 @@ function Register() {
             value={password}
             onChange={handleChange}
             sx={{ marginBottom: '1rem', backgroundColor: '#fff' }}
+            helperText="Password must be at least 8 characters long and include at least one special character (!@#$%^&*)."
           />
-
           {error && (
             <Typography color="red" sx={{ marginBottom: '1rem' }}>
               {error}
@@ -128,9 +152,9 @@ function Register() {
               padding: '0.8rem',
               fontSize: '1.1rem',
               borderRadius: '4px',
-              backgroundColor: '#0077cc',
+              backgroundColor: error ? 'gray' : '#0077cc',
               '&:hover': {
-                backgroundColor: '#0055aa',
+                backgroundColor: error ? 'gray' : '#0055aa',
               },
               color: '#fff',
             }}

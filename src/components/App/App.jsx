@@ -22,7 +22,7 @@ function App() {
         sx={{
           background: 'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(166,205,252,1) 100%)',
           minHeight: '100vh',
-          paddingBottom: '4rem', 
+          paddingBottom: '2rem', 
         }}
       >
         <Routes>
@@ -32,7 +32,7 @@ function App() {
           <Route path="/contacts" element={<PrivateRoute element={<Contacts />} />} />
           <Route path="*" element={<Typography>404 - Page Not Found</Typography>} />
         </Routes>
-        <Container sx={{ padding: '2rem', textAlign: 'center', marginTop: '-80px' }}>
+        <Container sx={{ padding: '2rem', textAlign: 'center', marginTop: '-90px' }}>
           <Box sx={{ marginBottom: '2rem' }}>
             {!isAuthenticated ? (
               <>
