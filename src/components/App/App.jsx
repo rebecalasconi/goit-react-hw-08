@@ -32,7 +32,7 @@ function App() {
           <Route path="/contacts" element={<PrivateRoute element={<Contacts />} />} />
           <Route path="*" element={<Typography>404 - Page Not Found</Typography>} />
         </Routes>
-        <Container sx={{ padding: '2rem', textAlign: 'center', marginTop: '-90px' }}>
+        <Container sx={{ padding: '2rem', textAlign: 'center', marginTop: '-75px' }}>
           <Box sx={{ marginBottom: '2rem' }}>
             {!isAuthenticated ? (
               <>
