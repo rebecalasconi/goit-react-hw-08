@@ -8,8 +8,7 @@ function Register() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
-  // New regex to match at least 8 characters with one special character
-  const passwordRegex = /^(?=.*[!@#$%^&*]).{8,}$/;
+  const passwordRegex = /^(?=.*[!@#$%^&*])(?=.*[A-Za-z\d])[A-Za-z\d!@#$%^&*]{7,}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const validateInputs = () => {
@@ -22,7 +21,7 @@ function Register() {
       return false;
     }
     if (!passwordRegex.test(password)) {
-      setError('Password must be at least 8 characters long and include at least one special character (!@#$%^&*).');
+      setError('Password must contain at least 6 normal characters, 1 special character (!@#$%^&*), and be at least 7 characters long.');
       return false;
     }
     setError('');
@@ -64,12 +63,32 @@ function Register() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === 'name') setName(value);
-    if (name === 'email') setEmail(value);
-    if (name === 'password') setPassword(value);
+    if (name === 'name') {
+      setName(value);
+      if (!value.trim()) {
+        setError('Name is required.');
+      } else {
+        setError('');
+      }
+    }
 
-    // Reset error only when all fields become valid
-    if (validateInputs()) setError('');
+    if (name === 'email') {
+      setEmail(value);
+      if (!emailRegex.test(value)) {
+        setError('Please enter a valid email address containing "@".');
+      } else {
+        setError('');
+      }
+    }
+
+    if (name === 'password') {
+      setPassword(value);
+      if (!passwordRegex.test(value)) {
+        setError('Password must contain at least 6 normal characters, 1 special character (!@#$%^&*), and be at least 7 characters long.');
+      } else {
+        setError('');
+      }
+    }
   };
 
   return (
@@ -136,7 +155,7 @@ function Register() {
             value={password}
             onChange={handleChange}
             sx={{ marginBottom: '1rem', backgroundColor: '#fff' }}
-            helperText="Password must be at least 8 characters long and include at least one special character (!@#$%^&*)."
+            helperText="Password must have at least 6 normal characters, 1 special character (!@#$%^&*), and be 7 or more characters long."
           />
           {error && (
             <Typography color="red" sx={{ marginBottom: '1rem' }}>
